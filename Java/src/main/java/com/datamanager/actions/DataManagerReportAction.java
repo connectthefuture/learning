@@ -18,7 +18,7 @@ public class DataManagerReportAction<T extends DataFile> implements DataManagerA
     private final PrintWriter writer;
     private final FileStore<T> fileStore;
 
-    DataManagerReportAction(@NonNull final FileStore fileStore, @NonNull final String reportFile) throws FileNotFoundException {
+    DataManagerReportAction(@NonNull final FileStore<T> fileStore, @NonNull final String reportFile) throws FileNotFoundException {
         this.fileStore = fileStore;
         this.writer = new PrintWriter(new File(reportFile));
     }

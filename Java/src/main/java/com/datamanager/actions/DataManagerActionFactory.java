@@ -7,8 +7,8 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import java.io.FileNotFoundException;
 
 /**
- * @author: pgajjar
- * @since: 2/6/17
+ * @author : pgajjar
+ * @since  : 2/6/17
  */
 public final class DataManagerActionFactory {
     public enum Type {

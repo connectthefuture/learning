@@ -17,9 +17,9 @@ import java.util.Collection;
 public class DataManagerGroupedReportAction<T extends DataFile> implements DataManagerAction {
     private static final Logger logger = Logger.getLogger(DataManagerGroupedReportAction.class.getName());
     private final PrintWriter writer;
-    private final FileStore<T> fileStore;
+    private final @NonNull FileStore<T> fileStore;
 
-    DataManagerGroupedReportAction(@NonNull final FileStore fileStore, @NonNull final String reportFile) throws FileNotFoundException {
+    DataManagerGroupedReportAction(@NonNull final FileStore<T> fileStore, @NonNull final String reportFile) throws FileNotFoundException {
         this.fileStore = fileStore;
         this.writer = new PrintWriter(new File(reportFile));
     }

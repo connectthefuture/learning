@@ -19,7 +19,7 @@ public class DataManagerScriptAction<T extends DataFile> implements DataManagerA
     private final PrintWriter writer;
     private final FileStore<T> fileStore;
 
-    DataManagerScriptAction(@NonNull final FileStore fileStore, @NonNull final String reportFile) throws FileNotFoundException {
+    DataManagerScriptAction(@NonNull final FileStore<T> fileStore, @NonNull final String reportFile) throws FileNotFoundException {
         this.fileStore = fileStore;
         this.writer = new PrintWriter(new File(reportFile));
     }

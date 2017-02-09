@@ -28,15 +28,14 @@ public class DataManagerScriptAction<T extends DataFile> implements DataManagerA
     public void action() {
         Collection<String> fileTypes = fileStore.fileTypes();
         for (String fileType : fileTypes) {
-            writer.println(fileType);
+            writer.println("# " + fileType);
             String lastMd5 = null;
             for (T dupFile : fileStore.filesOfType(fileType)) {
                 if (!dupFile.md5().equals(lastMd5)) {
                     writer.println();
                     lastMd5 = dupFile.md5();
                 }
-
-                writer.println("\t" + dupFile.md5() + "\trm \"" + dupFile.filePath() + "\"");
+                writer.println("\t" + dupFile.md5() + "\t" + DataFile.fileDeleteCmd() +  " \"" + dupFile.filePath() + "\"");
             }
             writer.println();
         }

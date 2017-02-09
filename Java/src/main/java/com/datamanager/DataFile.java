@@ -104,6 +104,11 @@ public class DataFile implements Serializable {
         return new ComparisionResult(file.isIdentical(otherFile), file.fileNameMatches(otherFile), file.fileTypeMatches(otherFile));
     }
 
+    @NonNull
+    public static String fileDeleteCmd() {
+        return (FileStore.isWindows()) ? "del" : "rm";
+    }
+
     public static void main(String[] args) throws IOException {
         @NonNull ComparisionResult compareResult = DataFile.compare(new DataFile("/Users/pgajjar/jingle/AssetPool/VideoMpeg2FifteenSeconds.a43a9957516e82e276db14760c2b7187.mpg"),
                 new DataFile("/tmp/test.mov"));

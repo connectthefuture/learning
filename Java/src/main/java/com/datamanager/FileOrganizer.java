@@ -68,10 +68,10 @@ public class FileOrganizer {
             this.validFileExtensions = ArrayUtils.addAll(extensions, uppercaseExts);
         }
 
-        this.reportFile = properties.getProperty("reportfile");
-        this.shouldAttemptRename = Boolean.valueOf(properties.getProperty("shouldattemptrename"));
+        this.reportFile = properties.getProperty("reportFile");
+        this.shouldAttemptRename = Boolean.valueOf(properties.getProperty("shouldAttemptRename"));
         this.deleteZeroSizeFiles = Boolean.valueOf(properties.getProperty("deleteZeroSizeFiles"));
-        this.dataManagerActionType = Type.valueOf(properties.getProperty("datamanageractiontype"));
+        this.dataManagerActionType = Type.valueOf(properties.getProperty("dataManagerActionType"));
     }
 
     public void process() throws IOException, IllegalAccessException {

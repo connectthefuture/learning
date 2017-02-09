@@ -19,10 +19,16 @@ public class FileStore<T extends DataFile> {
     // need to see if this can be serialized, but first think - does it have to be???
     private static final Logger logger = Logger.getLogger(FileStore.class.getName());
 
-    private final Multimap<String, T> fileStore = HashMultimap.create();
-    private final Multimap<String, String> fileTypeStore = HashMultimap.create();
-    private static FileStore handle;
-    private static FileStore duplicateHandle;
+    private static @NonNull FileStore handle;
+    private static @NonNull FileStore duplicateHandle;
+
+    private static final int fileSizeForDeleteStart = 0;
+    private static final int fileSizeForDeleteEnd = 0;
+
+    private static final String OPERATING_SYSTEM = System.getProperty("os.name");
+
+    private final @NonNull Multimap<String, T> fileStore = HashMultimap.create();
+    private final @NonNull Multimap<String, String> fileTypeStore = HashMultimap.create();
 
     private final boolean deleteZeroSizeFiles;
     private boolean isDuplicateStore = false;
@@ -65,7 +71,7 @@ public class FileStore<T extends DataFile> {
     }
 
     private void deleteFile(@NonNull final T file) {
-        file.fileHandle().delete();
+        file.fileHandle().deleteOnExit();
     }
 
     /**
@@ -75,9 +81,9 @@ public class FileStore<T extends DataFile> {
         if (isDuplicateStore) {
             throw new IllegalAccessException("Can't add element to Duplicate File Store.");
         }
-        if (deleteZeroSizeFiles && file.isFileSizeInRange(0, 0) ) {
+        if (deleteZeroSizeFiles && file.isFileSizeInRange(fileSizeForDeleteStart, fileSizeForDeleteEnd) ) {
             deleteFile(file);
-            logger.info("Delete request initiated for File: " + file.filePath());
+            logger.info("Delete request initiated for File size (" + fileSizeForDeleteStart + "-" + fileSizeForDeleteEnd + "): " + file.filePath());
             return false;
         } else {
             fileTypeStore.put(file.fileType(), key);
@@ -161,5 +167,9 @@ public class FileStore<T extends DataFile> {
     @NonNull
     public Collection<T> filesOfType(@NonNull final String key) {
         return fileTypeStore.get(key).stream().map(k -> fileStore.get(k)).flatMap(Collection::stream).collect(Collectors.toList());
+    }
+
+    public static boolean isWindows() {
+        return OPERATING_SYSTEM.startsWith("window");
     }
 }

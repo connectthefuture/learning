@@ -1,7 +1,9 @@
 package com.httplib.util;
 
+import com.httplib.FileUploader;
 import com.httplib.method.HttpMkCol;
 import com.httplib.method.HttpMove;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpDelete;
@@ -16,9 +18,12 @@ import org.apache.http.protocol.HTTP;
 import org.apache.log4j.Logger;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
 
 /**
  * @author  : pgajjar
@@ -45,6 +50,10 @@ public final class HttpWebDAVClient {
     private HttpWebDAVClient(@Nonnull final String _httpHostWebDAVBaseUrl) {
         httpHostWebDAVBaseUrl = _httpHostWebDAVBaseUrl;
         httpClient = HttpClients.createDefault();
+    }
+
+    public static HttpWebDAVClient newInstance(@Nonnull final String _httpHostUrl) {
+        return new HttpWebDAVClient(_httpHostUrl);
     }
 
     private static boolean successfulResponse(final int responseCode) {
@@ -122,10 +131,6 @@ public final class HttpWebDAVClient {
         return true;
     }
 
-    private boolean put(@Nonnull final String localFilePath, @Nonnull final String targetDirName, @Nonnull final String targetFileName) throws IOException, URISyntaxException {
-        return put(new File(localFilePath), targetDirName, targetFileName);
-    }
-
     /**
      * HTTP PUT - Method implementation.
      */
@@ -199,11 +204,28 @@ public final class HttpWebDAVClient {
         return true;
     }
 
+    @Nullable
+    private String urlEncode(@Nullable final String url) throws UnsupportedEncodingException {
+        if (url == null) {
+            return null;
+        }
 
+        final StringBuilder urlEncodedPayload = new StringBuilder();
+        for (String element : url.split(File.separator)) {
+            if (!StringUtils.isEmpty(element)) {
+                String urlEncodedElement = URLEncoder.encode(element, "UTF-8");
+                if (StringUtils.isEmpty(urlEncodedPayload)) {
+                    urlEncodedPayload.append(urlEncodedElement);
+                } else {
+                    urlEncodedPayload.append(File.separator + urlEncodedElement);
+                }
+            }
+        }
 
-    public static HttpWebDAVClient newInstance(@Nonnull final String _httpHostUrl) {
-        return new HttpWebDAVClient(_httpHostUrl);
+        return urlEncodedPayload.toString();
     }
+
+
 
     public boolean delete(@Nonnull final String dirName) throws IOException, URISyntaxException {
         // HTTP delete request for Directory should have trailing path separator.
@@ -223,7 +245,7 @@ public final class HttpWebDAVClient {
     }
 
     public boolean upload(@Nonnull final String localFilePath, @Nonnull final String targetDirName, @Nonnull final String targetFileName) throws IOException, URISyntaxException {
-        return put(localFilePath, targetDirName, targetFileName);
+        return put(new File(localFilePath), targetDirName, targetFileName);
     }
 
     public boolean upload(@Nonnull final File localFile, @Nonnull final String targetDirName, @Nonnull final String targetFileName) throws IOException, URISyntaxException {
@@ -236,5 +258,11 @@ public final class HttpWebDAVClient {
 
     public void close() throws IOException {
         httpClient.close();
+    }
+
+    public static void main(String[] args) throws UnsupportedEncodingException {
+        HttpWebDAVClient client = HttpWebDAVClient.newInstance(FileUploader.HttpWebDavHost.LOCAL.getHttpHostWebDAVBaseUrl());
+        System.out.println("Path: " + client.urlEncode("/FetchSpace/pgajjar-mbp.local/////1010101010101.1234566789#LOCAL-user_test@data/"));
+        System.out.println("File: " + client.urlEncode("Rustom__2016_*DesiSCR#Rip@x264.mkv"));
     }
 }

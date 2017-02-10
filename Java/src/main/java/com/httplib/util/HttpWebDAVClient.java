@@ -1,6 +1,5 @@
 package com.httplib.util;
 
-import com.httplib.FileUploader;
 import com.httplib.method.HttpMkCol;
 import com.httplib.method.HttpMove;
 import org.apache.commons.lang3.StringUtils;
@@ -229,10 +228,10 @@ public final class HttpWebDAVClient {
 
     public boolean delete(@Nonnull final String dirName) throws IOException, URISyntaxException {
         // HTTP delete request for Directory should have trailing path separator.
-        final String correctedDirName = dirName + File.separator;
-        String remoteDirPath = remoteFilePath(correctedDirName);
+        final String urlEncodedDirName = urlEncode(dirName) + File.separator;
+        String remoteDirPath = remoteFilePath(urlEncodedDirName);
         logger.info("Cleaning directory: " + remoteDirPath);
-        if (!rm(correctedDirName)) {
+        if (!rm(urlEncodedDirName)) {
             logger.info("Failed delete directory: " + remoteDirPath);
             return false;
         }
@@ -245,24 +244,18 @@ public final class HttpWebDAVClient {
     }
 
     public boolean upload(@Nonnull final String localFilePath, @Nonnull final String targetDirName, @Nonnull final String targetFileName) throws IOException, URISyntaxException {
-        return put(new File(localFilePath), targetDirName, targetFileName);
+        return put(new File(localFilePath), urlEncode(targetDirName), urlEncode(targetFileName));
     }
 
     public boolean upload(@Nonnull final File localFile, @Nonnull final String targetDirName, @Nonnull final String targetFileName) throws IOException, URISyntaxException {
-        return put(localFile, targetDirName, targetFileName);
+        return put(localFile, urlEncode(targetDirName), urlEncode(targetFileName));
     }
 
     public boolean move(@Nonnull String sourceDirName, @Nonnull String sourceFileName, @Nonnull String targetDirName, @Nonnull String targetFileName) throws IOException, URISyntaxException {
-        return mv(sourceDirName, sourceFileName, targetDirName, targetFileName);
+        return mv(urlEncode(sourceDirName), urlEncode(sourceFileName), urlEncode(targetDirName), urlEncode(targetFileName));
     }
 
     public void close() throws IOException {
         httpClient.close();
-    }
-
-    public static void main(String[] args) throws UnsupportedEncodingException {
-        HttpWebDAVClient client = HttpWebDAVClient.newInstance(FileUploader.HttpWebDavHost.LOCAL.getHttpHostWebDAVBaseUrl());
-        System.out.println("Path: " + client.urlEncode("/FetchSpace/pgajjar-mbp.local/////1010101010101.1234566789#LOCAL-user_test@data/"));
-        System.out.println("File: " + client.urlEncode("Rustom__2016_*DesiSCR#Rip@x264.mkv"));
     }
 }

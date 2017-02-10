@@ -103,20 +103,36 @@ public class HttpFileUploader {
         return true;
     }
 
+//    @Nonnull
+//    private String remoteTempPath() throws UnsupportedEncodingException, UnknownHostException {
+//        return ("TempPath" + File.separator +
+//                URLEncoder.encode(hostnameWithId(), "UTF-8") + File.separator +
+//                URLEncoder.encode("1234567890" + "." + "9876543210" + "-" + safeName(httpWebDAVHost.getEnv()) + "-" +
+//                        StringUtils.replaceChars("testdata#verynice@file_test", '#', '_'), "UTF-8") + File.separator);
+//    }
+//
+//    @Nonnull
+//    private String remotePath() throws UnsupportedEncodingException {
+//        return ("ActualPath" + File.separator +
+//                URLEncoder.encode(userName, "UTF-8") + File.separator +
+//                URLEncoder.encode("testmovieprovider#full#video", "UTF-8") + File.separator +
+//                URLEncoder.encode(StringUtils.replaceChars("testdata#verynice@file_test", '#', '_'), "UTF-8") + File.separator);
+//    }
+
     @Nonnull
     private String remoteTempPath() throws UnsupportedEncodingException, UnknownHostException {
         return ("TempPath" + File.separator +
-                URLEncoder.encode(hostnameWithId(), "UTF-8") + File.separator +
-                URLEncoder.encode("1234567890" + "." + "9876543210" + "-" + safeName(httpWebDAVHost.getEnv()) + "-" +
-                        StringUtils.replaceChars("testdata#verynice@file_test", '#', '_'), "UTF-8") + File.separator);
+                hostnameWithId() + File.separator +
+                "1234567890" + "." + "9876543210" + "-" + safeName(httpWebDAVHost.getEnv()) + "-" +
+                        StringUtils.replaceChars("testdata#verynice@file_test", '#', '_') + File.separator);
     }
 
     @Nonnull
     private String remotePath() throws UnsupportedEncodingException {
         return ("ActualPath" + File.separator +
-                URLEncoder.encode(userName, "UTF-8") + File.separator +
-                URLEncoder.encode("testmovieprovider#full#video", "UTF-8") + File.separator +
-                URLEncoder.encode(StringUtils.replaceChars("testdata#verynice@file_test", '#', '_'), "UTF-8") + File.separator);
+                userName + File.separator +
+                "testmovieprovider#full#video" + File.separator +
+                StringUtils.replaceChars("testdata#verynice@file_test", '#', '_') + File.separator);
     }
 
     @Nonnull

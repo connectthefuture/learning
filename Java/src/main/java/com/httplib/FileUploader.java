@@ -73,7 +73,7 @@ public class FileUploader {
 
     public static void main(String[] args) throws IOException, URISyntaxException {
         if (args.length < 1) {
-            System.out.println("usage: HttpFileUploader <list of files to upload>");
+            System.out.println("usage: FileUploader <list of files to upload>");
             System.exit(0);
         }
 

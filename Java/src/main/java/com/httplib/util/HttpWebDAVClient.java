@@ -66,23 +66,31 @@ public final class HttpWebDAVClient {
     }
 
     private boolean executeMethod(@Nonnull HttpRequestBase httpRequest) {
-        try {
-            boolean status = false;
-            int count = 0;
-            while (!status && count < DIAGNOSTIC_PUSH_SOLUTION_RETRIES) {
+        boolean retry = true;
+        int count = 0;
+        int responseStatusCode = -1;
+        while (retry && count < DIAGNOSTIC_PUSH_SOLUTION_RETRIES) {
+            try {
                 CloseableHttpResponse response = httpClient.execute(httpRequest);
-                int statusCode = response.getStatusLine().getStatusCode();
+                responseStatusCode = response.getStatusLine().getStatusCode();
                 response.close();
                 httpRequest.completed();
-                status = successfulResponse(statusCode);
+                retry = false;
+                return successfulResponse(responseStatusCode);
+            } catch (Exception e) {
+                logger.debug("[ Try: " + count + " ] - " + (retry ? "failed" : "succeed") +
+                        " HTTP Request: " + httpRequest +
+                        ", received status code: " + responseStatusCode +
+                        "Failure Reason: " + e);
+                retry = true;
+            } finally {
+                logger.debug("[ Try: " + count + " ] - " + (retry ? "failed" : "succeed") +
+                        " HTTP Request: " + httpRequest +
+                        ", received status code: " + responseStatusCode);
                 count++;
-                logger.info("[ Try: " + count + " ] - " + (status ? "succeed" : "failed") + " HTTP Request: " + httpRequest + ", received status code: " + statusCode);
             }
-            return status;
-        } catch (Exception e) {
-            logger.info("Failed with exception: " + e);
-            return false;
         }
+        return !retry;
     }
 
     private boolean exists(@Nonnull final String dirName) {

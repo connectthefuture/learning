@@ -121,7 +121,7 @@ public class HttpFileUploader {
 
     @Nonnull
     private String remoteTempPath() throws UnsupportedEncodingException, UnknownHostException {
-        return ("TempPath" + File.separator +
+        return ("FetchSpace" + File.separator +
                 hostnameWithId() + File.separator +
                 "1234567890" + "." + "9876543210" + "-" + safeName(httpWebDAVHost.getEnv()) + "-" +
                         StringUtils.replaceChars("testdata#verynice@file_test", '#', '_') + File.separator);
@@ -129,7 +129,7 @@ public class HttpFileUploader {
 
     @Nonnull
     private String remotePath() throws UnsupportedEncodingException {
-        return ("ActualPath" + File.separator +
+        return ("Diagnostic" + File.separator +
                 userName + File.separator +
                 "testmovieprovider#full#video" + File.separator +
                 StringUtils.replaceChars("testdata#verynice@file_test", '#', '_') + File.separator);

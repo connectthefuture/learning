@@ -9,8 +9,10 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
 import java.net.UnknownHostException;
 import java.util.Collection;
 import java.util.Iterator;
@@ -115,7 +117,9 @@ public class HttpFileUploader {
         for (Iterator filesIter = inputDataFiles.iterator(); filesIter.hasNext(); ) {
             final File currentFile = (File) filesIter.next();
 
-            boolean result = httpWebDAVClient.upload(currentFile, remoteFetchSpaceDir, currentFile.getName());
+            final String urlEncodedFileName = URLEncoder.encode(currentFile.getName(), "UTF-8");
+
+            boolean result = httpWebDAVClient.upload(currentFile, remoteFetchSpaceDir, urlEncodedFileName);
             log.info("Push " + (result ? "succeed" : "failed") + " for: " + currentFile + ", upload path: " + httpWebDAVClient.remoteDirPath(remoteFetchSpaceDir, currentFile.getName()));
 
             // if failed upload - return false.
@@ -131,7 +135,9 @@ public class HttpFileUploader {
         for (Iterator filesIter = inputDataFiles.iterator(); filesIter.hasNext(); ) {
             final File currentFile = (File) filesIter.next();
 
-            boolean result = httpWebDAVClient.move(remoteFetchSpaceDir, currentFile.getName(), remoteDiagnosticDir, currentFile.getName());
+            final String urlEncodedFileName = URLEncoder.encode(currentFile.getName(), "UTF-8");
+
+            boolean result = httpWebDAVClient.move(remoteFetchSpaceDir, urlEncodedFileName, remoteDiagnosticDir, urlEncodedFileName);
             log.info("Move " + (result ? "succeed" : "failed") + " for: " + currentFile + ", from Path: " + httpWebDAVClient.remoteDirPath(remoteFetchSpaceDir, currentFile.getName()) + " to Path: " + httpWebDAVClient.remoteDirPath(remoteDiagnosticDir, currentFile.getName()));
 
             // if failed move - return false.
@@ -147,15 +153,20 @@ public class HttpFileUploader {
     }
 
     @Nonnull
-    private String remoteFetchSpaceDirectory() throws UnknownHostException {
-        return ("FetchSpace" + File.separator + InetAddress.getLocalHost().getHostName() + File.separator + "1010101010101" + "." + "1234566789" + "-" + safeName(httpWebDAVHost.env) + "-" +
-                StringUtils.replaceChars("usertestdata", '#', '_'));
+    private String remoteFetchSpaceDirectory() throws UnsupportedEncodingException, UnknownHostException {
+        return ("FetchSpace" + File.separator +
+                URLEncoder.encode(InetAddress.getLocalHost().getHostName(), "UTF-8") + File.separator +
+                URLEncoder.encode("1234567890" + "." + "9876543210" + "-" + safeName(httpWebDAVHost.getEnv()) + "-" +
+                StringUtils.replaceChars("testdata#verynice@file_test", '#', '_'), "UTF-8") + File.separator);
     }
 
     @Nonnull
-    private String remoteDiagnosticDirectory() {
+    private String remoteDiagnosticDirectory() throws UnsupportedEncodingException {
         String userName = (System.getProperty("user.name") != null ? System.getProperty("user.name") : "_system");
-        return ("Diagnostic" + File.separator + userName + File.separator + "testdata" + File.separator + "usertestdata" + File.separator);
+        return ("Diagnostic" + File.separator +
+                userName + File.separator +
+                URLEncoder.encode("testmovieprovider#full#video", "UTF-8") + File.separator +
+                URLEncoder.encode(StringUtils.replaceChars("testdata#verynice@file_test", '#', '_'), "UTF-8") + File.separator);
     }
 
     public static void main(String[] args) throws IOException, URISyntaxException {

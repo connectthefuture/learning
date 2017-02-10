@@ -83,7 +83,7 @@ public final class HttpWebDAVClient {
         if (!exists(dirName)) {
             return executeMethod(new HttpMkCol(remoteDirPath(dirName)));
         } else {
-            logger.info(remoteDirPath(dirName) + " exists.");
+            logger.debug(remoteDirPath(dirName) + " exists.");
         }
         return true;
     }
@@ -95,20 +95,16 @@ public final class HttpWebDAVClient {
         if (exists(dirName)) {
             return executeMethod(new HttpDelete(remoteDirPath(dirName)));
         } else {
-            logger.info(remoteDirPath(dirName) + " doesn't exist.");
+            logger.debug(remoteDirPath(dirName) + " doesn't exist.");
         }
         return true;
     }
 
-    public boolean put(@Nonnull final String localFilePath, @Nonnull final String targetDirName, @Nonnull final String targetFileName) throws IOException, URISyntaxException {
+    private boolean put(@Nonnull final String localFilePath, @Nonnull final String targetDirName, @Nonnull final String targetFileName) throws IOException, URISyntaxException {
         return put(new File(localFilePath), targetDirName, targetFileName);
     }
 
-    public boolean upload(@Nonnull final String localFilePath, @Nonnull final String targetDirName, @Nonnull final String targetFileName) throws IOException, URISyntaxException {
-        return put(localFilePath, targetDirName, targetFileName);
-    }
-
-    public boolean put(@Nonnull final File localFile, @Nonnull final String targetDirName, @Nonnull final String targetFileName) throws IOException, URISyntaxException {
+    private boolean put(@Nonnull final File localFile, @Nonnull final String targetDirName, @Nonnull final String targetFileName) throws IOException, URISyntaxException {
         if (!localFile.exists()) {
             logger.info("Local File: " + localFile.getAbsolutePath() + " doesn't exist, can't proceed upload to " + httpHostWebDAVBaseUrl);
             return false;
@@ -134,6 +130,10 @@ public final class HttpWebDAVClient {
             logger.info("Remote file: " + targetHttpHostFilePath + " exists");
             return true;
         }
+    }
+
+    public boolean upload(@Nonnull final String localFilePath, @Nonnull final String targetDirName, @Nonnull final String targetFileName) throws IOException, URISyntaxException {
+        return put(localFilePath, targetDirName, targetFileName);
     }
 
     public boolean upload(@Nonnull final File localFile, @Nonnull final String targetDirName, @Nonnull final String targetFileName) throws IOException, URISyntaxException {
@@ -180,7 +180,7 @@ public final class HttpWebDAVClient {
     }
 
     public boolean rmRecursive(@Nonnull final String dirName) throws IOException, URISyntaxException {
-        // HTTP delete request for Directory should have trailing path seperator.
+        // HTTP delete request for Directory should have trailing path separator.
         final String correctedDirName = dirName + File.separator;
         String remoteDirPath = remoteDirPath(correctedDirName);
         logger.info("Cleaning directory: " + remoteDirPath);
